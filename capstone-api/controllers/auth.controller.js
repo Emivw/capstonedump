@@ -2,11 +2,12 @@ const express = require('express');
 const authRouter = express.Router();
 const userRouter = require('./user.controller');
 const jsonwebtoken = require('jsonwebtoken');
-const db = require('../config/db');
+const { db } = require('../config/db');
+// const { getUserByEmail } = require('../config/db');
+// const  = require('../config/db');
+
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const cookieParser = require('cookie-parser');
-
-
 
 
 authRouter.use(cookieParser());
@@ -19,7 +20,7 @@ authRouter.post('/register', async (req, res, next) => {
         let password = req.body.password;
 
 
-        if (!fullname || !email || !password) {
+        if (!fullname || !email || !password || !phone) {
             return res.sendStatus(400);
         }
 
@@ -28,7 +29,7 @@ authRouter.post('/register', async (req, res, next) => {
 
 
 
-        const user = await db.insertUser(fullname, email, password);
+        const user = await db.insertUser(fullname, email, phone, password);
 
         const jsontoken = jsonwebtoken.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '30m' });
         res.cookie('token', jsontoken, { httpOnly: true, secure: true, SameSite: 'strict', expires: new Date(Number(new Date()) + 30 * 60 * 1000) }); //we add secure: true, when using https.
@@ -51,7 +52,7 @@ authRouter.post('/login', async (req, res, next) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
-        user = await db.getUserByEmail(email);
+        let user = await db.getUserByEmail(email);
 
         if (!user) {
             return res.json({
@@ -99,9 +100,9 @@ async function verifyToken(req, res, next) {
 
             } else {
 
-                console.log(authData.user.role);
-                const role = authData.user.role;
-                if (role === "admin") {
+                console.log(authData.user.role_id);
+                const role = authData.user.role_id;
+                if (role === "member") { 
 
                     next();
                 } else {

@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+require('dotenv').config();
 
 
 
@@ -11,12 +12,12 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT
 
 });
-let db = {}; //cb object
+let db = {};
+//cb object
 // ***Requests to the User table ***
-
 db.allUser = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM User ', (error, users) => {
+        pool.query('SELECT * FROM Users ', (error, users) => {
             if (error) {
                 return reject(error);
             }
@@ -28,7 +29,7 @@ db.allUser = () => {
 
 db.getUserByEmail = (email) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM User WHERE email = ?', [email], (error, users) => {
+        pool.query('SELECT * FROM Users WHERE email = ?', [email], (error, users) => {
             if (error) {
                 return reject(error);
             }
@@ -39,9 +40,9 @@ db.getUserByEmail = (email) => {
 
 
 
-db.insertUser = (userName, email, password) => {
+db.insertUser = (fullname, email, password) => {
     return new Promise((resolve, reject) => {
-        pool.query('INSERT INTO User (user_name, email, password) VALUES (?,  ?, ?)', [userName, email, password], (error, result) => {
+        pool.query('INSERT INTO Users (fullname, email, password) VALUES (?,  ?, ?)', [fullname, email, password], (error, result) => {
             if (error) {
                 return reject(error);
             }
@@ -52,9 +53,9 @@ db.insertUser = (userName, email, password) => {
 };
 
 
-db.updateUser = (userName, role, email, password, id) => {
+db.updateUser = (fullname, role_id, email, password, id) => {
     return new Promise((resolve, reject) => {
-        pool.query('UPDATE User SET user_name = ?, role= ?, email= ?, password=? WHERE id = ?', [userName, role, email, password, id], (error) => {
+        pool.query('UPDATE User SET fullname = ?, role_id= ?, email= ?, password=? WHERE id = ?', [fullname, role_id, email, password, id], (error) => {
             if (error) {
                 return reject(error);
             }
@@ -77,4 +78,4 @@ db.deleteUser = (id) => {
     });
 };
 
-module.exports = db;
+module.exports = { db, pool };

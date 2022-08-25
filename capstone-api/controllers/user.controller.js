@@ -30,12 +30,12 @@ userRouter.get('/:userId', (req, res, next) => {
 
 userRouter.post('/', async (req, res, next) => {
     try {
-        const userName = req.body.user.userName;
+        const fullname = req.body.user.fullname;
         const email = req.body.user.email;
         let password = req.body.user.password;
 
 
-        if (!userName || !email || !password) {
+        if (!fullname || !email || !password) {
             return res.sendStatus(400);
         }
 
